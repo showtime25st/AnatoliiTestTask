@@ -1,12 +1,15 @@
-package tests;
+package tests.smoke;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
-import org.testng.Assert;
+
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
+import test_objects.ChandrilaPlanet;
+import test_objects.Planet;
+import test_objects.TatooinePlanet;
 
-import java.util.Map;
 
 public class OnePlanetTests {
 
@@ -15,10 +18,17 @@ public class OnePlanetTests {
     Response resp;
     int statusValue;
 
-    @Test
-    public void checkFirstPlanetFields() {
+    @DataProvider(name = "test1")
+    public static Object[][] primeNumbers() {
+        return new Object[][] { { new TatooinePlanet() },{new ChandrilaPlanet()} };
+    }
 
-        resp = RestAssured.get("https://swapi.co/api/planets/1/");
+
+
+    @Test(dataProvider = "test1")
+    public void checkFirstPlanetFields(Planet planet) {
+
+        resp = RestAssured.get(planet.getUrl());
         statusValue = resp.getStatusCode();
 
         name = resp.jsonPath().get("name");
@@ -26,9 +36,9 @@ public class OnePlanetTests {
 
         SoftAssert softAssert = new SoftAssert();
 
-        softAssert.assertTrue(name.equals("Tatooine"),
+        softAssert.assertTrue(name.equals(planet.getName()),
                 "Planet name incorrect " + statusValue);
-        softAssert.assertTrue(residents == 10,
+        softAssert.assertTrue(residents == planet.getResidents().size(),
                 "Number of residents incorrect " + residents);
 
         softAssert.assertAll();
