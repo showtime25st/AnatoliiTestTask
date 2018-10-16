@@ -1,9 +1,9 @@
-package test_objects;
+package test_data;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TatooinePlanet implements Planet {
+public class TatooinePlanetTestData implements PlanetTestData {
 
     @Override
     public String getName() {

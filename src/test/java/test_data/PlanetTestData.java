@@ -1,8 +1,8 @@
-package test_objects;
+package test_data;
 
 import java.util.List;
 
-public interface Planet {
+public interface PlanetTestData {
 
     default String getName() {
         return "";

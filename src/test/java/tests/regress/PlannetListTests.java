@@ -2,10 +2,13 @@ package tests.regress;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
+import com.jayway.restassured.specification.RequestSpecification;
+import models.Planet;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +28,9 @@ public class PlannetListTests {
 
     List<Object> planetsList;
 
-    String firstPlanet;
+    Planet firstPlanet;
 
-    String lastPlanet;
+    Planet lastPlanet;
 
     String responseAsString;
 
@@ -39,19 +42,27 @@ public class PlannetListTests {
 
         resp = RestAssured.get("https://swapi.co/api/planets/");
 
+
+        RestAssured.baseURI = "https://swapi.co/api/planets/";
+        RequestSpecification request = RestAssured.given();
+
+        Response response = request.get();
+        System.out.println("Response Body -> " + response.body().asString());
+
+        Planet[] planets = response.jsonPath().getObject("results",Planet[].class );
+
+
         statusValue = resp.getStatusCode();
 
         countValue = resp.jsonPath().get("count");
 
         nextValue = resp.jsonPath().get("next");
 
-        allPlanets = resp.jsonPath().getList("results").size();
+        allPlanets = planets.length;
 
-        planetsList = resp.jsonPath().getList("results");
+        firstPlanet = planets[0];
 
-        firstPlanet = planetsList.get(0).toString();
-
-        lastPlanet = planetsList.get(9).toString();
+        lastPlanet = planets[9];
 
         responseAsString = resp.asString().toLowerCase();
 
@@ -63,13 +74,13 @@ public class PlannetListTests {
                 "Number of planets incorrect " + countValue);
         softAssert.assertTrue(nextValue.contains("https://swapi.co/api/planets/?page=2"),
                 "Next page in response incorrect " + nextValue);
-        softAssert.assertTrue(firstPlanet.contains("name=Alderaan"),
+        softAssert.assertTrue(firstPlanet.getName().contains("Alderaan"),
                 "FirstPlanet in the list incorrect " + firstPlanet);
         softAssert.assertTrue(allPlanets == 10,
                 "Number of planets on the list incorrect " + allPlanets);
         softAssert.assertFalse(responseAsString.contains("error"),
                 "In response there is error, response text: " + responseAsString);
-        softAssert.assertTrue(lastPlanet.contains("gravity=0.9 standard"),
+        softAssert.assertTrue(lastPlanet.getGravity().contains("0.9 standard"),
                 "Gravity of the last planet in the list incorrect " + lastPlanet);
 
         softAssert.assertAll();

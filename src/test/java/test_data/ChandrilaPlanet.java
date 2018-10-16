@@ -1,9 +1,9 @@
-package test_objects;
+package test_data;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChandrilaPlanet implements Planet {
+public class ChandrilaPlanet implements PlanetTestData {
 
     @Override
     public String getName() {
